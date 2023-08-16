@@ -5,7 +5,15 @@ export const AppReducer = (state, action) => {
     let budget = 0;
     switch (action.type) {
         case 'ADD_EXPENSE':
+            
+            if(isNaN(action.payload.cost) || action.payload.cost <= 0){
+                alert("The number must be a positive numeric value.");
+                action.type = "DONE";
+                return;
+            }
+
             let total_budget = 0;
+
             total_budget = state.expenses.reduce(
                 (previousExp, currentExp) => {
                     return previousExp + currentExp.cost
@@ -13,6 +21,7 @@ export const AppReducer = (state, action) => {
             );
             total_budget = total_budget + action.payload.cost;
             action.type = "DONE";
+
             if(total_budget <= state.budget) {
                 total_budget = 0;
                 state.expenses.map((currentExp)=> {
@@ -30,6 +39,7 @@ export const AppReducer = (state, action) => {
                     ...state
                 }
             }
+            
             case 'RED_EXPENSE':
                 const red_expenses = state.expenses.map((currentExp)=> {
                     if (currentExp.name === action.payload.name && currentExp.cost - action.payload.cost >= 0) {
@@ -65,8 +75,13 @@ export const AppReducer = (state, action) => {
                 ...state,
             };
         case 'CHG_CURRENCY':
+            
+            state.currency = {
+                "name": action.payload["name"],
+                "symbol": action.payload["symbol"]
+            }
             action.type = "DONE";
-            state.currency = action.payload;
+            
             return {
                 ...state
             }
@@ -86,7 +101,11 @@ const initialState = {
         { id: "Human Resource", name: 'Human Resource', cost: 40 },
         { id: "IT", name: 'IT', cost: 500 },
     ],
-    currency: '£'
+    
+    currency: {
+        'symbol': '£',
+        'name': 'Pound'
+    }
 };
 
 // 2. Creates the context this is the thing our components import and use to get the state
